@@ -73,7 +73,7 @@ float _obrat = 3.5;
 double x_pos_ = 0.0;
 double y_pos_ = 0.0;
 double heading_ = 0.0;
-String input_m[2] = {"", ""};
+String input_m[8] = {"", "", "", "", "", "", "", ""};
 String feedback_msg_str = "";
 
 
@@ -249,7 +249,7 @@ void setup() {
   regulator_L.setLimits(-1.0, 1.0);
 
   Serial.begin(115200);
-  inputString.reserve(150);
+  inputString.reserve(250);
   
   delay(100);
   
@@ -315,15 +315,73 @@ void loop() {
       if (inputString[i] == ';') break;
       input_m[1] += inputString[i];
     }
+
+    for (i = i+1; i < inputString.length()-1; i++){
+      if (inputString[i] == ';') break;
+      input_m[2] += inputString[i];
+    }
+
+    for (i = i+1; i < inputString.length()-1; i++){
+      if (inputString[i] == ';') break;
+      input_m[3] += inputString[i];
+    }
+
+    for (i = i+1; i < inputString.length()-1; i++){
+      if (inputString[i] == ';') break;
+      input_m[4] += inputString[i];
+    }
+
+    for (i = i+1; i < inputString.length()-1; i++){
+      if (inputString[i] == ';') break;
+      input_m[5] += inputString[i];
+    }
+
+    for (i = i+1; i < inputString.length()-1; i++){
+      if (inputString[i] == ';') break;
+      input_m[6] += inputString[i];
+    }
+
+    for (i = i+1; i < inputString.length()-1; i++){
+      if (inputString[i] == ';') break;
+      input_m[7] += inputString[i];
+    }
+
     char str1[input_m[0].length()];
     char str2[input_m[1].length()]; 
+    char str3[input_m[2].length()]; 
+    char str4[input_m[3].length()]; 
+    char str5[input_m[4].length()]; 
+    char str6[input_m[5].length()]; 
+    char str7[input_m[6].length()]; 
+    char str8[input_m[7].length()]; 
+
     for(i=0; i < input_m[0].length(); i++) str1[i] = input_m[0][i];
     for(i=0; i < input_m[1].length(); i++) str2[i] = input_m[1][i];
-    //speed_converter(atof(input_m[0]), atof(input_m[1]));
+    for(i=0; i < input_m[2].length(); i++) str3[i] = input_m[2][i];
+    for(i=0; i < input_m[3].length(); i++) str4[i] = input_m[3][i];
+    for(i=0; i < input_m[4].length(); i++) str5[i] = input_m[4][i];
+    for(i=0; i < input_m[5].length(); i++) str6[i] = input_m[5][i];
+    for(i=0; i < input_m[6].length(); i++) str7[i] = input_m[6][i];
+    for(i=0; i < input_m[7].length(); i++) str8[i] = input_m[7][i];
+
     input_m[0] = "";
     input_m[1] = "";
+    input_m[2] = "";
+    input_m[3] = "";
+    input_m[4] = "";
+    input_m[5] = "";
+    input_m[6] = "";
+    input_m[7] = "";
 
     speed_converter(atof(str1), atof(str2));
+
+    regulator_L.Kp = atof(str3);
+    regulator_L.Kd = atof(str4);
+    regulator_L.Ki = atof(str5);
+
+    regulator_L.Kp = atof(str6);
+    regulator_L.Kd = atof(str7);
+    regulator_L.Ki = atof(str8);
 
     inputString = "";
     stringComplete = false;
