@@ -93,8 +93,6 @@ class FeedbackProcessor(Node):
                 omega_angle = float(parts[2])
                 x_real_linear_velocity = float(parts[3])
                 z_real_angular_velocity = float(parts[4])
-                wheel_speed_left = float(parts[5])
-                wheel_speed_right = float(parts[6])
 
                 # Publish data to appropriate topics
                 self.publish_odometry(
@@ -102,7 +100,10 @@ class FeedbackProcessor(Node):
                     x_real_linear_velocity, z_real_angular_velocity
                 )
 
-                self.publish_wheels_speed(wheel_speed_left, wheel_speed_right)
+                self.publish_wheels_speed(
+                    x_real_linear_velocity,
+                    z_real_angular_velocity
+                )
                 
                 self.get_logger().debug(
                     f'Processed ESP32 message: position ({x_position:.2f}, {y_position:.2f})'
@@ -118,8 +119,14 @@ class FeedbackProcessor(Node):
                 f'Error parsing message: {msg.data}. Error: {e}'
                 )
 
-    def publish_wheels_speed(self, wheel_speed_left, wheel_speed_right):
+    def publish_wheels_speed(self, x_lirear_speed, z_real_angular_velocity):
         """Publish wheel speed data."""
+        
+        l = 0.117 # width of the wheel base
+
+        wheel_speed_left = x_lirear_speed - z_real_angular_velocity * l / 2
+        wheel_speed_right = x_lirear_speed + z_real_angular_velocity * l / 2
+
         left_speed_msg = Float32()
         left_speed_msg.data = wheel_speed_left
         self.left_speed_pub.publish(left_speed_msg)
