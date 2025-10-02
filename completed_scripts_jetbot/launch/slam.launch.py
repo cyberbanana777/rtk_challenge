@@ -114,12 +114,12 @@ def launch_setup(context, *args, **kwargs):
 
     return [
         #serial_bridge_launch,
-        jetbos_mirea_description_launch,
+        # jetbos_mirea_description_launch,
         sllidar_launch,
-        change_env,
-        camera_launch,
-        transform_node,
-        rviz_node
+        # change_env,
+        # camera_launch,
+        # transform_node,
+        # rviz_node
     ]
 
 
@@ -133,7 +133,7 @@ def generate_launch_description():
 
     serial_port_arg = DeclareLaunchArgument(
         'serial_port',
-        default_value='/dev/ttyUSB0',
+        default_value='/dev/rplidar',
         description='Specifying usb port to connected lidar',
     )
 
