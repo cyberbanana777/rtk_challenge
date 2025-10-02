@@ -32,8 +32,14 @@ def generate_launch_description():
     # Use xacro to process the file
     xacro_file = os.path.join(get_package_share_directory(pkg_name),file_subpath)
     # xacro_path = os.path.join(get_package_share_directory('jetbot_mirea_description'), 'urdf')
-    robot_description_raw = xacro.process_file(xacro_file).toxml()
-    # urdf = to_urdf(xacro_path, {'use_nominal_extrinsics' : 'true', 'add_plug' : 'false'})
+    robot_description_raw = xacro.process_file(
+        xacro_file,
+        mappings={
+            'use_nominal_extrinsics': 'false',
+            'add_plug': 'false',
+            'use_mesh': 'true'
+        }
+    ).toxml()
 
     # Configure the node
     node_robot_state_publisher = Node(

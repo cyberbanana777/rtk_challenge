@@ -112,6 +112,21 @@ def launch_setup(context, *args, **kwargs):
         condition=IfCondition(rviz_condition),
     )
 
+    slam_node = Node(
+        package='slam_toolbox',
+        executable='sync_slam_toolbox_node',
+        name='slam_toolbox',
+        output='screen',
+        parameters=[
+            os.path.join(config_dir, 'config', 'mapper_params_online_async.yaml'),
+            {'use_sim_time': LaunchConfiguration('use_sim_time')}
+        ],
+        remappings=[
+            ('/scan', '/scan'),        # убедись, что твой топик называется так
+            ('/odom', '/odom')         # убедись, что odometry публикуется здесь
+        ]
+    )
+
     return [
         serial_bridge_launch,
         jetbos_mirea_description_launch,
@@ -119,7 +134,9 @@ def launch_setup(context, *args, **kwargs):
         change_env,
         # camera_launch,
         transform_node,
-        rviz_node
+        rviz_node,
+        slam_node,
+
     ]
 
 
@@ -155,6 +172,12 @@ def generate_launch_description():
         default_value='Standard',
         description='Specifying scan mode of lidar Standard: max_distance: 12.0 m, Point number: 2.0K Express: max_distance: 12.0 m, Point number: 4.0K \nBoost: max_distance: 12.0 m, Point number: 8.0K',
         choices=['Standard', 'Express', 'Boost'],
+    )
+
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        description='Use simulation (Gazebo) clock if true'
     )
 
     # target_topic_arg = DeclareLaunchArgument(
@@ -205,6 +228,7 @@ def generate_launch_description():
         frame_id_arg,
         angle_compensate_arg,
         scan_mode_arg,
+        use_sim_time_arg,
         
         # target_topic_arg,
         # max_joint_velocity_arg,

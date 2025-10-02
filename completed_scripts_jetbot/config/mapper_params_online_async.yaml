@@ -1,0 +1,32 @@
+slam_toolbox:
+  ros__parameters:
+    # Основные параметры
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: SCHUR_JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+    ceres_loss_function: None
+
+    # Параметры лазера
+    scan_topic: /scan
+    odom_topic: /odom
+    mode: mapping  # важно: режим "mapping"
+
+    # TF
+    base_frame: base_footprint
+    odom_frame: odom
+    map_frame: map
+
+    # Настройки качества
+    transform_publish_period: 0.02
+    map_update_interval: 0.05
+    resolution: 0.01  # разрешение карты в метрах
+    position_covariance_scale: 1.0
+    yaw_covariance_scale: 1.0
+
+    minimum_travel_distance: 0.05  # минимальное расстояние между точками в 2D
+
+    # Инициализация
+    publish_2d_scan: true
+    publish_odom: true
