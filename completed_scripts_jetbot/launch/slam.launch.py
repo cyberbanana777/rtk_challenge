@@ -7,11 +7,13 @@ from launch import LaunchDescription
 from launch.actions import (
     IncludeLaunchDescription,
     DeclareLaunchArgument,
-    OpaqueFunction
+    OpaqueFunction,
+    SetEnvironmentVariable
 )
 from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
+from launch_ros.actions import Node
 
 def launch_setup(context, *args, **kwargs):
     # Get value arg 'mode'
@@ -50,7 +52,20 @@ def launch_setup(context, *args, **kwargs):
         'launch'
     )
 
-
+    config_dir = get_package_share_directory('completed_scripts_jetbot')
+    config_file = os.path.join(config_dir, 'config', 'realsense_config.yaml')
+    
+    # Получаем путь к системному launch-файлу realsense2_camera
+    realsense_pkg_share = get_package_share_directory('realsense2_camera')
+    realsense_launch_file = os.path.join(realsense_pkg_share, 'launch', 'rs_launch.py')
+    
+    change_env = SetEnvironmentVariable(
+        name='REALSENSE_CONFIG_FILE',
+        value=config_file
+    )
+    camera_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(realsense_launch_file)
+    )
     # serial_bridge_launch = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(os.path.join(
     #         pkg1_launch_dir, 'serial_bringup.launch.py'
@@ -74,11 +89,21 @@ def launch_setup(context, *args, **kwargs):
         ),
         launch_arguments=sllidar_params.items()
     )
-    
+
+    transform_node =Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_transform_publisher',
+        arguments=['0', '0', '0', '0', '0', '0', '1', 'realsense_link', 'camera_link']
+    )
+
     return [
         #serial_bridge_launch,
         jetbos_mirea_description_launch,
-        sllidar_launch
+        sllidar_launch,
+        change_env,
+        camera_launch,
+        transform_node,
     ]
 
 
@@ -164,6 +189,7 @@ def generate_launch_description():
         frame_id_arg,
         angle_compensate_arg,
         scan_mode_arg,
+        
         # target_topic_arg,
         # max_joint_velocity_arg,
         # target_action_arg,
