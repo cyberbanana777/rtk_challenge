@@ -36,7 +36,7 @@ class SerialBridgeNode(Node):
         super().__init__('serial_bridge_node')
 
         # Declare parameters for port configuration
-        self.declare_parameter('serial_port', '/dev/ttyUSB0')
+        self.declare_parameter('serial_port', '/dev/esp32')
         self.declare_parameter('baudrate', 115200)
         self.declare_parameter('ros_out_topic', 'serial/from')
         self.declare_parameter('ros_in_topic', 'serial/to')

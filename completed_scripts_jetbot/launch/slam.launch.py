@@ -72,13 +72,13 @@ def launch_setup(context, *args, **kwargs):
     camera_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(realsense_launch_file)
     )
-    # serial_bridge_launch = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(os.path.join(
-    #         pkg1_launch_dir, 'serial_bringup.launch.py'
-    #         )
-    #     ),
-    #     launch_arguments=serial_bridge_params.items()
-    # )
+    serial_bridge_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(
+            pkg1_launch_dir, 'serial_bringup.launch.py'
+            )
+        ),
+        # launch_arguments=serial_bridge_params.items()
+    )
 
     jetbos_mirea_description_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(
@@ -113,13 +113,13 @@ def launch_setup(context, *args, **kwargs):
     )
 
     return [
-        #serial_bridge_launch,
-        # jetbos_mirea_description_launch,
+        serial_bridge_launch,
+        jetbos_mirea_description_launch,
         sllidar_launch,
-        # change_env,
+        change_env,
         # camera_launch,
-        # transform_node,
-        # rviz_node
+        transform_node,
+        rviz_node
     ]
 
 

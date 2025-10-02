@@ -28,7 +28,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Quaternion, TransformStamped
 from tf2_ros import TransformBroadcaster
 
-NUMS_OF_FIELDS = 7
+NUMS_OF_FIELDS = 6
 
 class FeedbackProcessor(Node):
     """
@@ -57,7 +57,7 @@ class FeedbackProcessor(Node):
         
         # Parameters for coordinate frames
         self.declare_parameter('frame_id', 'odom')
-        self.declare_parameter('child_frame_id', 'base_link')
+        self.declare_parameter('child_frame_id', 'base_footprint')
 
         self.frame_id = self.get_parameter('frame_id').value
         self.child_frame_id = self.get_parameter('child_frame_id').value

@@ -28,7 +28,7 @@ def generate_launch_description():
         namespace='low_level',
         output='screen',
         parameters=[{
-            'port': '/dev/ttyUSB0',
+            'serial_port': '/dev/esp32',
             'baudrate': 115200,
             'timeout': 1,
             'ros_in_topic': 'serial/cmd',
