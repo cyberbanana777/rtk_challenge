@@ -12,14 +12,14 @@ from launch.conditions import IfCondition
 def generate_launch_description():
 
     launch_rviz_arg = DeclareLaunchArgument(
-        'launch_rviz',
-        default_value='True',
+        'launch_rviz_description',
+        default_value='False',
         description='Запускает / не запускает RViz2.',
         choices=['True', 'False']
     )
 
     rviz_condition = PythonExpression([
-        '"', LaunchConfiguration('launch_rviz'), '" == "True"'
+        '"', LaunchConfiguration('launch_rviz_description'), '" == "True"'
     ])
 
     # Specify the name of the package and path to xacro file within the package
@@ -59,7 +59,7 @@ def generate_launch_description():
         arguments=['-d', rviz_config_dir],
         parameters=[{'use_sim_time': False}],
         condition=IfCondition(rviz_condition),
-        )
+    )
 
 
     # Run the node

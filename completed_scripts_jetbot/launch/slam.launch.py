@@ -14,6 +14,10 @@ from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node
+from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch.conditions import IfCondition
+
+
 
 def launch_setup(context, *args, **kwargs):
     # Get value arg 'mode'
@@ -27,9 +31,6 @@ def launch_setup(context, *args, **kwargs):
     #     'target_action': LaunchConfiguration('target_action'),
     # }
 
-    jetbos_mirea_description_params = {
-        'launch_rviz': LaunchConfiguration('launch_rviz'),
-    }
     
     sllidar_params = {
         'serial_port': LaunchConfiguration('serial_port'),
@@ -59,6 +60,11 @@ def launch_setup(context, *args, **kwargs):
     realsense_pkg_share = get_package_share_directory('realsense2_camera')
     realsense_launch_file = os.path.join(realsense_pkg_share, 'launch', 'rs_launch.py')
     
+    rviz_config_dir = os.path.join(get_package_share_directory('completed_scripts_jetbot'), 'rviz', 'full.rviz')
+    rviz_condition = PythonExpression([
+        '"', LaunchConfiguration('launch_rviz'), '" == "True"'
+    ])
+
     change_env = SetEnvironmentVariable(
         name='REALSENSE_CONFIG_FILE',
         value=config_file
@@ -79,7 +85,6 @@ def launch_setup(context, *args, **kwargs):
             pkg2_launch_dir, 'jetbot_mirea_rviz.launch.py'
             )
         ),
-        launch_arguments=jetbos_mirea_description_params.items()
     )
 
     sllidar_launch = IncludeLaunchDescription(
@@ -97,6 +102,16 @@ def launch_setup(context, *args, **kwargs):
         arguments=['0', '0', '0', '0', '0', '0', '1', 'realsense_link', 'camera_link']
     )
 
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', rviz_config_dir],
+        parameters=[{'use_sim_time': False}],
+        condition=IfCondition(rviz_condition),
+    )
+
     return [
         #serial_bridge_launch,
         jetbos_mirea_description_launch,
@@ -104,6 +119,7 @@ def launch_setup(context, *args, **kwargs):
         change_env,
         camera_launch,
         transform_node,
+        rviz_node
     ]
 
 
