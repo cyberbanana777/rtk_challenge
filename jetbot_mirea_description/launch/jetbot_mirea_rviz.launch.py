@@ -5,11 +5,22 @@ from launch_ros.actions import Node
 import xacro
 import sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from launch_utils import to_urdf
-import launch.events
-
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch.conditions import IfCondition
 
 def generate_launch_description():
+
+    launch_rviz_arg = DeclareLaunchArgument(
+        'launch_rviz',
+        default_value='True',
+        description='Запускает / не запускает RViz2.',
+        choices=['True', 'False']
+    )
+
+    rviz_condition = PythonExpression([
+        '"', LaunchConfiguration('launch_rviz'), '" == "True"'
+    ])
 
     # Specify the name of the package and path to xacro file within the package
     pkg_name = 'jetbot_mirea_description'
@@ -31,6 +42,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{'robot_description': robot_description_raw}] # add other parameters here if required
     )
+
     joint_state_publisher_node = Node(
         package='joint_state_publisher',
         executable='joint_state_publisher',
@@ -38,17 +50,22 @@ def generate_launch_description():
         output='screen',
         parameters=[{'use_sim_time': False}]
     )
+
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
         name='rviz2',
         output='screen',
         arguments=['-d', rviz_config_dir],
-        parameters=[{'use_sim_time': False}]
+        parameters=[{'use_sim_time': False}],
+        condition=IfCondition(rviz_condition),
         )
 
 
     # Run the node
     return LaunchDescription([
-        node_robot_state_publisher, joint_state_publisher_node, rviz_node
+        launch_rviz_arg,
+        node_robot_state_publisher,
+        joint_state_publisher_node,
+        rviz_node
     ])
